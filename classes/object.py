@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from classes.data import Data
 from classes.trajectory import TrajectoryPoint, Point
-from typing import Optional
+from typing import Optional, List
 from matplotlib import pyplot as plt
 
 @dataclass
@@ -10,68 +10,30 @@ class Object:
     This class represents an object with a unique identifier (uuid) and a trajectory.
 
     Attributes:
-        - uuid (int): The unique identifier of the object.
-        - trajectory (list, optional): A list of trajectory points. Defaults to None.
-
-    Methods:
-        - filter(filter_func): Returns a new trajectory list containing only the trajectories that satisfy the given filter function.
-        - plot(trajectory=None): Plots the given trajectory as a scatter plot.
-    
+        uuid (int): The unique identifier of the object.
+        trajectory (list, optional): A list of trajectory points. Defaults to None.
     """
     uuid: int
     trajectory: Optional[list] = None
-
-    def filter(self, filter_func) -> list:
-        """
-        Returns a new trajectory list containing only the trajectories that satisfy the given filter function.
-        
-        Args:
-        - func: a function that takes a trajectory list as input and returns a boolean value
-        
-        Returns:
-        - A new trajectory list
-        """
-        filtered = []
-        for point in self.trajectory:
-            if filter_func(point):
-                filtered.append(point)
-        return filtered
-
-    def plot(self, trajetory: list = None) -> None:
-        """
-        Plots the given trajectory as a scatter plot.
-
-        Args:
-            trajetory (list, optional): A list of trajectory points to plot. If not
-                provided, the method uses the internal trajectory data stored in the
-                object. Defaults to None.
-
-        Returns:
-            None
-        """
-        if trajetory is None:
-            trajetory = self.trajectory
-
-        xs = [trajectory_point.point.x for trajectory_point in trajetory]
-        ys = [trajectory_point.point.y for trajectory_point in trajetory]
-        plt.plot(xs, ys)
-        plt.show()
         
 @dataclass
 class Objects(Data):
     """
-    A class for working with object trajectory data.
-
-    Inherits from the `Data` class, which loads and stores trajectory data from a file.
+    The Objects class is used for working with object trajectory data, 
+    inherited from the Data class. The Data class loads and stores trajectory data from a file. 
+    The Objects class contains attributes and methods for manipulating and analyzing the 
+    trajectory data.
 
     Attributes:
-        filename (str): The name of the file containing the trajectory data.
-        trajectories (dict): A dictionary containing all the objects trajectories
-            indexed by their UUID.
+        instances(dict): A dictionary containing all the objects trajectories indexed by their UUID.
 
     Methods:
-        get_by_id(uuid: int) -> dict: Returns an object dictionary for the given UUID.
+        get_by_uuid(self, uuid: int) -> dict: Returns an object for the given UUID.
+        load_object_instances_from_dataset(self): Loads object instances from the dataset and stores them in the instances dictionary.
+        filter(self, filter_func): Filters the trajectory data based on the provided filter_func function.
+        plot(self, trajetory: list = None): Plots the given trajectory as a scatter plot. If trajetory is not provided, the method uses the internal trajectory data stored in the object.
     """
+
     instances = dict()
 
     def __init__(self, filename: str):
@@ -92,7 +54,15 @@ class Objects(Data):
         object.trajectory = self.instances[uuid]
         return object
 
-    def load_object_instances_from_dataset(self):
+    def load_object_instances_from_dataset(self) -> None:
+        """
+        Loads object instances from the dataset stored in the `self.dataset` attribute of the 
+        `Objects` object, and stores them in the `self.instances` attribute as a dictionary of 
+        lists of `TrajectoryPoint` objects, indexed by UUID.
+
+        Returns:
+            None
+        """
         for input in self.dataset:
             uuid = int(input[1])
             if uuid not in self.instances:
@@ -104,7 +74,21 @@ class Objects(Data):
         for uuid in self.instances:
             self.instances[uuid] = sorted(self.instances[uuid], key=lambda x: x.index)
 
-    def filter(self, filter_func):
+    def filter(self, filter_func) -> List[TrajectoryPoint]:
+        """
+        Returns a filtered list of all trajectory points in the data set.
+
+        The method applies the specified filter function to each object in the data set and
+        returns a list of all trajectory points for which the filter function returns True.
+
+        Args:
+            filter_func (Callable[[List[TrajectoryPoint]], bool]): A function that takes a
+                list of `TrajectoryPoint` objects and returns True or False.
+
+        Returns:
+            List[TrajectoryPoint]: A list of `TrajectoryPoint` objects that satisfy the
+            filter condition.
+        """
         filtered_points = []
         for uuid in self.instances:
             if filter_func(self.instances[uuid]):
