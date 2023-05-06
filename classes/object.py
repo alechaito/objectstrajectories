@@ -78,7 +78,7 @@ class Objects(Data):
         super().__init__(filename)
         self.load_object_instances_from_dataset()
 
-    def get_by_id(self, uuid: int) -> dict:
+    def get_by_uuid(self, uuid: int) -> dict:
         """
         Returns an object for the given UUID.
 
