@@ -1,5 +1,5 @@
 # filter to point
-def threshold(point):
+def filter_threshold(point):
     if point.index > 800 and point.index < 810:
         return True
     return False
