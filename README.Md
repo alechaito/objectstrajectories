@@ -6,7 +6,7 @@ This project is focused on analyzing and visualizing a set of trajectories on a 
 The data file should be a numpy matrix having the following columns
 
 - index
-- id
+- uuid
 - x
 - y
 
@@ -16,12 +16,58 @@ The data file should be a numpy matrix having the following columns
 3. Instance a class Objects given the filename as a parameter
 
 
-```
+```python
 from classes.object import Objects
 
 #loadind objects from given file
 objects = Objects("data.npy")
 ```
 
+## How to plot object and objects trajectories?
 
+1. Plotting all objects trajectories
+```python
+objects.plot()
+```
 
+2. Plotting a single object trajectory
+```python
+# get object by uuid
+object = objects.get_by_uuid(uuid=0)
+
+object.plot()
+```
+
+### How to filter a trajectories or a single trajetory?
+
+1. Filtering all objects trajectories
+```python
+from classes.object import Objects
+from utils.filters import filter_length
+
+#loadind objects from given file
+objects = Objects("data.npy")
+
+# applying filter_length
+filtered_points = objects.filter(filter_length)
+
+# plotting only filtered trajectories
+objects.plot(filtered_points)
+```
+
+2. Filtering a object trajectory
+```python
+from classes.object import Objects
+from utils.filters import filter_threshold
+
+#loadind objects from given file
+objects = Objects("data.npy")
+
+object = objects.get_by_uuid(uuid=0)
+
+# applying filter_length
+filtered_points = object.filter(filter_threshold)
+
+# plotting only filtered trajectories
+object.plot(filtered_points)
+```
