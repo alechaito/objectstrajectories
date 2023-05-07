@@ -48,7 +48,7 @@ filtered_points = objects.filter(filter_length)
 objects.plot(filtered_points)
 ```
 
-### How to run tests?
+### How to run test suite?
 
 1. Go to the root of the project where "main.py" its located
 2. Run the command below
