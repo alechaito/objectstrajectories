@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from classes.data import Data
 from classes.trajectory import TrajectoryPoint, Point
-from typing import Optional, List
+from typing import Optional, List, Dict
 from matplotlib import pyplot as plt
+import pandas as pd
 
 @dataclass
 class Object:
@@ -38,7 +39,7 @@ class Objects(Data):
 
     def __init__(self, filename: str):
         super().__init__(filename)
-        self.load_object_instances_from_dataset()
+        self.load_object_instances_from_dataset2()
 
     def get_by_uuid(self, uuid: int) -> dict:
         """
@@ -54,25 +55,24 @@ class Objects(Data):
         object.trajectory = self.instances[uuid]
         return object
 
-    def load_object_instances_from_dataset(self) -> None:
+
+    def load_object_instances_from_dataset2(self) -> None:
         """
-        Loads object instances from the dataset stored in the `self.dataset` attribute of the 
-        `Objects` object, and stores them in the `self.instances` attribute as a dictionary of 
-        lists of `TrajectoryPoint` objects, indexed by UUID.
+            Loads object instances from the dataset stored in the `self.dataset` attribute of the 
+            `Objects` object, and stores them in the `self.instances` attribute as a dictionary of 
+            lists of `TrajectoryPoint` objects, indexed by UUID.
 
-        Returns:
-            None
+            Returns:
+                None
         """
-        for input in self.dataset:
-            uuid = int(input[1])
-            if uuid not in self.instances:
-                self.instances[uuid] = []
+        df = pd.DataFrame(self.dataset, columns=['time', 'uuid', 'x', 'y'])
 
-            trajectory_point = TrajectoryPoint(input[0], Point(input[2], input[3]))
-            self.instances[uuid].append(trajectory_point)
+        grouped = df.groupby('uuid')
+        self.instances: Dict[int, List[TrajectoryPoint]] = {}
+        for uuid, group_df in grouped:
+            trajectory_points = [TrajectoryPoint(time, Point(x, y)) for time, x, y in zip(group_df['time'], group_df['x'], group_df['y'])]
+            self.instances[uuid] = sorted(trajectory_points, key=lambda x: x.index)
 
-        for uuid in self.instances:
-            self.instances[uuid] = sorted(self.instances[uuid], key=lambda x: x.index)
 
     def filter(self, filter_func) -> List[TrajectoryPoint]:
         """
