@@ -32,7 +32,7 @@ objects.plot()
 ```
 
 
-### How to filter a trajectories?
+### How to filter trajectories?
 
 ```python
 from classes.object import Objects
