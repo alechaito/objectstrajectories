@@ -56,10 +56,12 @@ objects.plot(filtered_points)
 pytest
 ```
 
-### How to deploy project using docker?
+### How to run the project using docker?
 
 ```
 docker build -t my-python-app .
 docker run my-python-app
 ```
+
+Obs: Plotting is not working on docker.
 
