@@ -1,9 +1,10 @@
 import pytest
+from unittest import TestCase
 from classes.object import Objects
 from classes.trajectory import TrajectoryPoint, Point
 
-class TestObjects:
-    def setup_method(self):
+class TestObjects(TestCase):
+    def setUp(self):
         self.objects = Objects("test_data.npy")
         self.objects.instances = {
             1: [

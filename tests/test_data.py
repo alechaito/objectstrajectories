@@ -1,8 +1,8 @@
-import unittest
+from unittest import TestCase
 import numpy as np
 from classes.data import Data
 
-class TestData(unittest.TestCase):
+class TestData(TestCase):
     def setUp(self):
         self.data = Data("test_data.npy")
 
